@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'core/di/service_locator.dart';
+import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'presentation/home_screen.dart';
 
@@ -21,7 +22,7 @@ class FixItApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // NOTA: MultiProvider requiere al menos un provider para funcionar.
-    // Lo dejamos comentado hasta que tengas tu primer ViewModel (ej. LoginViewModel).
+    // Lo dejamos comentado hasta tener el primer ViewModel (ej. LoginViewModel).
 
     /* return MultiProvider(
       providers: [
@@ -43,10 +44,7 @@ class FixItApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'FixIt App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
       home: const HomeScreen(),
     );
   }
