@@ -1,17 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'core/di/service_locator.dart';
 import 'firebase_options.dart';
-import 'presentation/home_screen.dart'; // Importamos la pantalla de la capa de presentación
+import 'presentation/home_screen.dart';
 
 void main() async {
-  // 1. Inicialización de Bindings y Firebase
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Aquí inicializaremos la Inyección de Dependencias (DI) más adelante.
-  // setupServiceLocator();
+  await setupServiceLocator();
 
   runApp(const FixItApp());
 }
@@ -21,14 +20,33 @@ class FixItApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // NOTA: MultiProvider requiere al menos un provider para funcionar.
+    // Lo dejamos comentado hasta que tengas tu primer ViewModel (ej. LoginViewModel).
+
+    /* return MultiProvider(
+      providers: [
+        // ChangeNotifierProvider(create: (_) => getIt<LoginViewModel>()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'FixIt App',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
+          useMaterial3: true,
+        ),
+        home: const HomeScreen(),
+      ),
+    );
+    */
+
+    // Mientras tanto, retornamos la app directa para que no falle
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // Quitamos la etiqueta de debug
+      debugShowCheckedModeBanner: false,
       title: 'FixIt App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      // La home apunta a nuestra capa de presentación
       home: const HomeScreen(),
     );
   }
