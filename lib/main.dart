@@ -1,30 +1,35 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'firebase_options.dart'; // Este archivo lo generó el comando anterior
+import 'firebase_options.dart';
+import 'presentation/home_screen.dart'; // Importamos la pantalla de la capa de presentación
 
 void main() async {
-  // 1. Asegura que los bindings de Flutter estén listos antes de usar código nativo
+  // 1. Inicialización de Bindings y Firebase
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Inicializa Firebase usando las opciones generadas para tu plataforma
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(const MyApp());
+  // Aquí inicializaremos la Inyección de Dependencias (DI) más adelante.
+  // setupServiceLocator();
+
+  runApp(const FixItApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class FixItApp extends StatelessWidget {
+  const FixItApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, // Quitamos la etiqueta de debug
       title: 'FixIt App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
         useMaterial3: true,
       ),
-      home: const Scaffold(body: Center(child: Text('Firebase Inicializado'))),
+      // La home apunta a nuestra capa de presentación
+      home: const HomeScreen(),
     );
   }
 }
