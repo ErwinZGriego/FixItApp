@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../home/home_screen.dart';
-import '../login/login_screen.dart';
-import '../login/login_view_model.dart';
+import '../screens/create_report_screen.dart';
+import '../screens/home_screen.dart';
+import '../screens/login_screen.dart';
+import '../viewmodels/login_view_model.dart';
 
 class FixItApp extends StatelessWidget {
   const FixItApp({super.key});
@@ -25,6 +26,7 @@ class FixItApp extends StatelessWidget {
         routes: {
           LoginScreen.routeName: (_) => const LoginScreen(),
           HomeScreen.routeName: (_) => const HomeScreen(),
+          CreateReportScreen.routeName: (_) => const CreateReportScreen(),
         },
       ),
     );
