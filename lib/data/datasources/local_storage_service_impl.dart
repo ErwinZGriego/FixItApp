@@ -5,9 +5,8 @@ import 'package:path_provider/path_provider.dart';
 import '../../domain/repositories/i_local_storage_service.dart';
 
 class LocalStorageServiceImpl implements ILocalStorageService {
-  LocalStorageServiceImpl({
-    Future<Directory> Function()? getBaseDirectory,
-  }) : _getBaseDirectory = getBaseDirectory ?? getApplicationDocumentsDirectory;
+  LocalStorageServiceImpl({Future<Directory> Function()? getBaseDirectory})
+    : _getBaseDirectory = getBaseDirectory ?? getApplicationDocumentsDirectory;
 
   // Permite cambiar el directorio base en pruebas si hace falta.
   final Future<Directory> Function() _getBaseDirectory;
