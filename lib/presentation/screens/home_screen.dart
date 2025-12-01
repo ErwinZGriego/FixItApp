@@ -1,3 +1,5 @@
+import 'package:fix_it_app/presentation/screens/create_report_screen.dart';
+import 'package:fix_it_app/presentation/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,6 +11,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+
       body: const SafeArea(
         child: Column(
           children: [
@@ -22,8 +25,9 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
 
-      // Barra de navegación inferior
-      bottomNavigationBar: const _BottomNavBar(),
+      // Barra de navegación inferior (la levantamos con SafeArea para que no se
+      // encime con la barra de navegación del sistema).
+      bottomNavigationBar: const SafeArea(top: false, child: _BottomNavBar()),
     );
   }
 }
@@ -93,6 +97,15 @@ class _HomeHeaderBanner extends StatelessWidget {
                 ],
               ),
             ),
+
+            // Botón de logout en el banner
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white),
+              onPressed: () {
+                // Logout simulado: regresamos al login
+                Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+              },
+            ),
           ],
         ),
       ),
@@ -123,10 +136,8 @@ class _NewReportButtonState extends State<_NewReportButton>
       scale = 1.0;
     });
 
-    // Más adelante aquí abriremos el flujo real de "nuevo reporte"
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Crear nuevo reporte (pendiente)')),
-    );
+    // Abrimos la pantalla de creación de reporte
+    Navigator.pushNamed(context, CreateReportScreen.routeName);
   }
 
   void _onTapCancel() {
@@ -137,7 +148,8 @@ class _NewReportButtonState extends State<_NewReportButton>
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).primaryColor;
+    // Cambiamos el "FAB" grande al color secundario (naranja)
+    final fabColor = Theme.of(context).colorScheme.secondary;
 
     return GestureDetector(
       onTapDown: _onTapDown,
@@ -149,7 +161,7 @@ class _NewReportButtonState extends State<_NewReportButton>
         child: Container(
           width: 160,
           height: 160,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: primary),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: fabColor),
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

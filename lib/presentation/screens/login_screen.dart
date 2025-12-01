@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../home/home_screen.dart';
-import 'login_view_model.dart';
+import '../viewmodels/login_view_model.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -229,7 +229,7 @@ class _LoginFormState extends State<_LoginForm> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Entrar'),
+                : const Text('Ingresar'),
           ),
         ),
         const SizedBox(height: 8),
