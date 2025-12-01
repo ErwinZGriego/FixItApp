@@ -21,7 +21,7 @@ class CreateReportScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Descripcion
+            // Descripción
             TextField(
               controller: vm.descriptionController,
               maxLines: 4,
@@ -35,7 +35,7 @@ class CreateReportScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Categoría
+            // Categoría (strings)
             DropdownButtonFormField<String>(
               initialValue: vm.selectedCategory,
               items: vm.categories
@@ -75,20 +75,36 @@ class CreateReportScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Enviar: deshabilitado si no pasa validacion
+            // Enviar: integrado al repositorio vía VM (HU-11).
             ElevatedButton(
-              onPressed: vm.canSubmit
+              onPressed: (vm.canSubmit && !vm.isSubmitting)
                   ? () async {
-                      final ok = await vm.trySubmit();
+                      final ok = await context
+                          .read<CreateReportViewModel>()
+                          .submit();
+
                       if (!context.mounted) return;
-                      if (ok) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Validación OK')),
-                        );
-                      }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            ok
+                                ? 'Reporte guardado'
+                                : 'Revisa descripción y foto',
+                          ),
+                        ),
+                      );
+
+                      if (ok) Navigator.pop(context);
                     }
                   : null,
-              child: const Text('Enviar'),
+              child: vm.isSubmitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Enviar'),
             ),
           ],
         ),
