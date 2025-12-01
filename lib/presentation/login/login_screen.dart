@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../home/home_screen.dart';
 import 'login_view_model.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -151,10 +152,8 @@ class _LoginFormState extends State<_LoginForm> {
     if (!mounted) return;
 
     if (ok) {
-      // Más adelante esto debería navegar al home (HU-05)
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Inicio de sesión simulado')),
-      );
+      // Login simulado, ahora sí mandamos al Home (HU-05)
+      Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Completa email y contraseña')),
