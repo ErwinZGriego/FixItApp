@@ -1,4 +1,5 @@
 // lib/presentation/app/fixit_app.dart
+import 'package:fix_it_app/presentation/viewmodels/create_report_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,11 @@ class FixItApp extends StatelessWidget {
         routes: {
           LoginScreen.routeName: (_) => const LoginScreen(),
           HomeScreen.routeName: (_) => const HomeScreen(),
-          CreateReportScreen.routeName: (_) => const CreateReportScreen(),
+
+          CreateReportScreen.routeName: (_) => ChangeNotifierProvider(
+            create: (_) => CreateReportViewModel(),
+            child: const CreateReportScreen(),
+          ),
         },
       ),
     );
