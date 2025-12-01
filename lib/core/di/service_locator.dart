@@ -1,29 +1,28 @@
-import 'package:fix_it_app/data/datasources/local_storage_service_impl.dart';
-import 'package:fix_it_app/domain/repositories/i_local_storage_service.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../data/datasources/camera_service_impl.dart';
+import '../../data/datasources/local_storage_service_impl.dart';
+import '../../data/repositories/incident_repository_impl.dart';
 import '../../domain/repositories/i_camera_service.dart';
-
+import '../../domain/repositories/i_incident_repository.dart';
+import '../../domain/repositories/i_local_storage_service.dart';
 import '../../domain/services/i_report_validator.dart';
 import '../../domain/services/report_validator.dart';
 
-// Instancia global de GetIt (el Service Locator)
 final getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
-  // Aquí registraremos nuestras dependencias más adelante.
-  // El orden importa:
-  // 1. External (Firebase, SharedPreferences, Dio)
-  // 2. Data (Repositorios y Data Sources)
-  // 3. Domain (Use Cases - opcional)
-  // 4. Presentation (ViewModels/Blocs)
-
-  // Servicio de cámara (infraestructura)
+  // Data sources
   getIt.registerLazySingleton<ICameraService>(() => CameraServiceImpl());
-
   getIt.registerLazySingleton<ILocalStorageService>(
     () => LocalStorageServiceImpl(),
   );
+
+  // Dominio
   getIt.registerLazySingleton<IReportValidator>(() => ReportValidator());
+
+  // Repositorio de incidentes (SQLite)
+  getIt.registerLazySingleton<IIncidentRepository>(
+    () => IncidentRepositoryImpl(),
+  );
 }
