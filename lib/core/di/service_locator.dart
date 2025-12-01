@@ -1,3 +1,5 @@
+import 'package:fix_it_app/data/datasources/local_storage_service_impl.dart';
+import 'package:fix_it_app/domain/repositories/i_local_storage_service.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../data/datasources/camera_service_impl.dart';
@@ -16,4 +18,8 @@ Future<void> setupServiceLocator() async {
 
   // Servicio de cámara (infraestructura)
   getIt.registerLazySingleton<ICameraService>(() => CameraServiceImpl());
+
+  getIt.registerLazySingleton<ILocalStorageService>(
+    () => LocalStorageServiceImpl(),
+  );
 }
