@@ -148,7 +148,6 @@ class _NewReportButtonState extends State<_NewReportButton>
 
   @override
   Widget build(BuildContext context) {
-    // Cambiamos el "FAB" grande al color secundario (naranja)
     final fabColor = Theme.of(context).colorScheme.secondary;
 
     return GestureDetector(
@@ -209,7 +208,8 @@ class _BottomNavBar extends StatelessWidget {
             label: 'Historial',
             isSelected: false,
             onTap: () {
-              // Navegación futura al historial
+              // Navega al listado de mis reportes
+              Navigator.pushNamed(context, '/history');
             },
           ),
           _CenterHomeButton(color: primary),
@@ -218,7 +218,7 @@ class _BottomNavBar extends StatelessWidget {
             label: 'Ajustes',
             isSelected: false,
             onTap: () {
-              // Navegación futura a ajustes
+              // futuro
             },
           ),
         ],
