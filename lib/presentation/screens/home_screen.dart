@@ -2,6 +2,8 @@ import 'package:fix_it_app/presentation/screens/create_report_screen.dart';
 import 'package:fix_it_app/presentation/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/bottom_pill_nav.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -25,9 +27,19 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
 
-      // Barra de navegación inferior (la levantamos con SafeArea para que no se
-      // encime con la barra de navegación del sistema).
-      bottomNavigationBar: const SafeArea(top: false, child: _BottomNavBar()),
+      // Nueva nav bar en 2 secciones (Home activo)
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: BottomPillNav(
+          active: BottomTab.home,
+          onTapHome: () {
+            // Ya estamos en Home; sin acción.
+          },
+          onTapHistory: () {
+            Navigator.pushReplacementNamed(context, '/history');
+          },
+        ),
+      ),
     );
   }
 }
@@ -98,11 +110,10 @@ class _HomeHeaderBanner extends StatelessWidget {
               ),
             ),
 
-            // Botón de logout en el banner
+            // Logout simple
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white),
               onPressed: () {
-                // Logout simulado: regresamos al login
                 Navigator.pushReplacementNamed(context, LoginScreen.routeName);
               },
             ),
@@ -125,26 +136,13 @@ class _NewReportButtonState extends State<_NewReportButton>
   double scale = 1.0;
 
   // Pequeña animación de escala al presionar
-  void _onTapDown(TapDownDetails details) {
-    setState(() {
-      scale = 0.95;
-    });
-  }
-
+  void _onTapDown(TapDownDetails details) => setState(() => scale = 0.95);
   void _onTapUp(TapUpDetails details) {
-    setState(() {
-      scale = 1.0;
-    });
-
-    // Abrimos la pantalla de creación de reporte
+    setState(() => scale = 1.0);
     Navigator.pushNamed(context, CreateReportScreen.routeName);
   }
 
-  void _onTapCancel() {
-    setState(() {
-      scale = 1.0;
-    });
-  }
+  void _onTapCancel() => setState(() => scale = 1.0);
 
   @override
   Widget build(BuildContext context) {
@@ -175,119 +173,6 @@ class _NewReportButtonState extends State<_NewReportButton>
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).primaryColor;
-
-    return Container(
-      height: 70,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, -3),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _NavItem(
-            icon: Icons.history,
-            label: 'Historial',
-            isSelected: false,
-            onTap: () {
-              // Navega al listado de mis reportes
-              Navigator.pushNamed(context, '/history');
-            },
-          ),
-          _CenterHomeButton(color: primary),
-          _NavItem(
-            icon: Icons.settings,
-            label: 'Ajustes',
-            isSelected: false,
-            onTap: () {
-              // futuro
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CenterHomeButton extends StatelessWidget {
-  const _CenterHomeButton({required this.color});
-
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 12,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: const Icon(Icons.home, color: Colors.white),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final primary = Theme.of(context).primaryColor;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: isSelected ? primary : Colors.black54),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: isSelected ? primary : Colors.black54,
-              ),
-            ),
-          ],
         ),
       ),
     );
