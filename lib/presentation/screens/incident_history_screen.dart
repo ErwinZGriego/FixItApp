@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../domain/models/incident.dart';
 import '../viewmodels/incident_list_view_model.dart';
+import 'incident_detail_screen.dart';
 
 class IncidentHistoryScreen extends StatelessWidget {
   const IncidentHistoryScreen({super.key});
@@ -68,7 +69,10 @@ class _IncidentTile extends StatelessWidget {
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       tileColor: Colors.white,
-      leading: _Thumb(path: i.photoPath),
+      leading: Hero(
+        tag: 'incident-photo-${i.id}',
+        child: _Thumb(path: i.photoPath),
+      ),
       title: Text(
         i.title.isEmpty ? 'Reporte' : i.title,
         maxLines: 1,
@@ -77,7 +81,12 @@ class _IncidentTile extends StatelessWidget {
       subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: _StatusPill(text: _pretty(i.status.name)),
       onTap: () {
-        // Futuro: detalle del incidente
+        // Navegación al detalle (pasamos el objeto completo)
+        Navigator.pushNamed(
+          context,
+          IncidentDetailScreen.routeName,
+          arguments: i,
+        );
       },
     );
   }
@@ -98,13 +107,10 @@ class _Thumb extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(8);
     final f = File(path);
-    Widget child;
-    if (f.existsSync()) {
-      child = Image.file(f, fit: BoxFit.cover);
-    } else {
-      // Si el archivo ya no existe, mostramos un placeholder
-      child = const Icon(Icons.image_not_supported_outlined, size: 28);
-    }
+    final child = f.existsSync()
+        ? Image.file(f, fit: BoxFit.cover)
+        : const Icon(Icons.image_not_supported_outlined, size: 28);
+
     return ClipRRect(
       borderRadius: radius,
       child: Container(
