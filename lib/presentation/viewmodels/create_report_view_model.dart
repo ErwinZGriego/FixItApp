@@ -18,9 +18,11 @@ class CreateReportViewModel extends ChangeNotifier {
   final TextEditingController descriptionController = TextEditingController();
 
   final List<String> categories = const [
-    'mobiliario',
-    'infraestructura',
-    'limpieza',
+    'Mobiliario',
+    'Infraestructura',
+    'Limpieza',
+    'Seguridad',
+    'Otro',
   ];
 
   String? selectedCategory;
@@ -139,13 +141,17 @@ class CreateReportViewModel extends ChangeNotifier {
   // ---- Utilidades ----
   IncidentCategory _mapStringToCategory(String? value) {
     switch (value) {
-      case 'infraestructura':
+      case 'Infraestructura':
         return IncidentCategory.infraestructura;
-      case 'limpieza':
+      case 'Limpieza':
         return IncidentCategory.limpieza;
-      case 'mobiliario':
-      default:
+      case 'Mobiliario':
         return IncidentCategory.mobiliario;
+      case 'Seguridad':
+        return IncidentCategory.seguridad;
+      case 'Otro':
+      default:
+        return IncidentCategory.otro;
     }
   }
 

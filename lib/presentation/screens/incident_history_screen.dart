@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:fix_it_app/presentation/viewmodels/incident_list_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/models/incident.dart';
 import '../screens/home_screen.dart';
-import '../viewmodels/incident_list_view_model.dart';
 import '../widgets/bottom_pill_nav.dart';
+import 'incident_detail_screen.dart'; // ← necesario para routeName
 
 class IncidentHistoryScreen extends StatelessWidget {
   const IncidentHistoryScreen({super.key});
@@ -27,7 +28,7 @@ class IncidentHistoryScreen extends StatelessWidget {
               Navigator.pushReplacementNamed(context, HomeScreen.routeName);
             },
             onTapHistory: () {
-              // Ya estamos en Historial; sin acción.
+              // Ya estamos en Historial
             },
           ),
         ),
@@ -46,7 +47,6 @@ class _Body extends StatelessWidget {
     if (vm.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-
     if (vm.items.isEmpty) {
       return RefreshIndicator(
         onRefresh: vm.refresh,
@@ -91,16 +91,19 @@ class _IncidentTile extends StatelessWidget {
       subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: _StatusPill(text: _pretty(i.status.name)),
       onTap: () {
-        // Futuro: detalle del incidente
+        // Navega al detalle con el incidente como argumento
+        Navigator.pushNamed(
+          context,
+          IncidentDetailScreen.routeName,
+          arguments: i,
+        );
       },
     );
   }
 
   String _pretty(String s) => '${s[0].toUpperCase()}${s.substring(1)}';
-
   String _date(DateTime d) =>
       '${d.year}-${_two(d.month)}-${_two(d.day)} ${_two(d.hour)}:${_two(d.minute)}';
-
   String _two(int n) => n.toString().padLeft(2, '0');
 }
 

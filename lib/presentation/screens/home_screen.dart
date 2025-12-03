@@ -1,42 +1,36 @@
 import 'package:fix_it_app/presentation/screens/create_report_screen.dart';
 import 'package:fix_it_app/presentation/screens/login_screen.dart';
+import 'package:fix_it_app/presentation/widgets/bottom_pill_nav.dart';
 import 'package:flutter/material.dart';
-
-import '../widgets/bottom_pill_nav.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
   static const routeName = '/home';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-
       body: const SafeArea(
         child: Column(
           children: [
             SizedBox(height: 12),
             _HomeHeaderBanner(),
             SizedBox(height: 24),
-
-            // Botón en el centro para crear el reporte
             Expanded(child: Center(child: _NewReportButton())),
           ],
         ),
       ),
-
-      // Nueva nav bar en 2 secciones (Home activo)
+      // Usa el nav compartido (pestaña activa = home)
       bottomNavigationBar: SafeArea(
         top: false,
         child: BottomPillNav(
           active: BottomTab.home,
           onTapHome: () {
-            // Ya estamos en Home; sin acción.
+            // Ya estás en Home; no hacemos nada.
           },
           onTapHistory: () {
-            Navigator.pushReplacementNamed(context, '/history');
+            Navigator.pushNamed(context, '/history');
           },
         ),
       ),
@@ -86,11 +80,11 @@ class _HomeHeaderBanner extends StatelessWidget {
               child: const Icon(Icons.campaign_outlined, color: Colors.white),
             ),
             const SizedBox(width: 12),
-            Expanded(
+            const Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Bienvenido a FixIt',
                     style: TextStyle(
                       color: Colors.white,
@@ -98,20 +92,16 @@ class _HomeHeaderBanner extends StatelessWidget {
                       fontSize: 16,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     'Reporta incidencias y ayuda a mantener la UTH en buen estado.',
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.85),
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
             ),
-
-            // Logout simple
             IconButton(
+              key: const ValueKey('home.logout'),
               icon: const Icon(Icons.logout, color: Colors.white),
               onPressed: () {
                 Navigator.pushReplacementNamed(context, LoginScreen.routeName);
@@ -135,23 +125,22 @@ class _NewReportButtonState extends State<_NewReportButton>
     with SingleTickerProviderStateMixin {
   double scale = 1.0;
 
-  // Pequeña animación de escala al presionar
-  void _onTapDown(TapDownDetails details) => setState(() => scale = 0.95);
-  void _onTapUp(TapUpDetails details) {
+  void _onTapDown(TapDownDetails d) => setState(() => scale = 0.95);
+  void _onTapCancel() => setState(() => scale = 1.0);
+  void _onTapUp(TapUpDetails d) {
     setState(() => scale = 1.0);
     Navigator.pushNamed(context, CreateReportScreen.routeName);
   }
-
-  void _onTapCancel() => setState(() => scale = 1.0);
 
   @override
   Widget build(BuildContext context) {
     final fabColor = Theme.of(context).colorScheme.secondary;
 
     return GestureDetector(
+      key: const ValueKey('home.newReport'),
       onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
+      onTapUp: _onTapUp,
       child: AnimatedScale(
         scale: scale,
         duration: const Duration(milliseconds: 120),

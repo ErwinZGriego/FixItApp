@@ -23,6 +23,7 @@ class CreateReportScreen extends StatelessWidget {
           children: [
             // Descripción
             TextField(
+              key: const Key('create.description'),
               controller: vm.descriptionController,
               maxLines: 4,
               decoration: InputDecoration(
@@ -37,6 +38,7 @@ class CreateReportScreen extends StatelessWidget {
 
             // Categoría (strings)
             DropdownButtonFormField<String>(
+              key: const Key('create.category'),
               initialValue: vm.selectedCategory,
               items: vm.categories
                   .map((c) => DropdownMenuItem(value: c, child: Text(c)))
@@ -53,6 +55,7 @@ class CreateReportScreen extends StatelessWidget {
 
             // Adjuntar foto
             OutlinedButton.icon(
+              key: const Key('create.attach'),
               onPressed: vm.isBusy ? null : vm.attachPhoto,
               icon: vm.isBusy
                   ? const SizedBox(
@@ -75,8 +78,9 @@ class CreateReportScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Enviar: integrado al repositorio vía VM (HU-11).
+            // Enviar
             ElevatedButton(
+              key: const Key('create.submit'),
               onPressed: (vm.canSubmit && !vm.isSubmitting)
                   ? () async {
                       final ok = await context
@@ -129,7 +133,20 @@ class _ImagePreview extends StatelessWidget {
           borderRadius: radius,
           border: Border.all(color: Colors.black.withValues(alpha: 0.08)),
         ),
-        child: Image.file(File(path), fit: BoxFit.cover),
+        child: Image.file(
+          File(path),
+          fit: BoxFit.cover,
+          // Si el decodificador falla (PNG/JPG corrupto), mostramos placeholder
+          errorBuilder: (_, __, ___) => Container(
+            height: 180,
+            alignment: Alignment.center,
+            color: Colors.black12,
+            child: const Text(
+              'Vista previa no disponible',
+              style: TextStyle(color: Colors.black54),
+            ),
+          ),
+        ),
       ),
     );
   }
