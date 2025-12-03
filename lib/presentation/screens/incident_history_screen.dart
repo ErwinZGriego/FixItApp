@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../domain/models/incident.dart';
+import '../screens/home_screen.dart';
 import '../viewmodels/incident_list_view_model.dart';
-import 'incident_detail_screen.dart';
+import '../widgets/bottom_pill_nav.dart';
 
 class IncidentHistoryScreen extends StatelessWidget {
   const IncidentHistoryScreen({super.key});
@@ -18,6 +19,18 @@ class IncidentHistoryScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(title: const Text('Mis reportes')),
         body: const _Body(),
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: BottomPillNav(
+            active: BottomTab.history,
+            onTapHome: () {
+              Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+            },
+            onTapHistory: () {
+              // Ya estamos en Historial; sin acción.
+            },
+          ),
+        ),
       ),
     );
   }
@@ -69,10 +82,7 @@ class _IncidentTile extends StatelessWidget {
     return ListTile(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       tileColor: Colors.white,
-      leading: Hero(
-        tag: 'incident-photo-${i.id}',
-        child: _Thumb(path: i.photoPath),
-      ),
+      leading: _Thumb(path: i.photoPath),
       title: Text(
         i.title.isEmpty ? 'Reporte' : i.title,
         maxLines: 1,
@@ -81,12 +91,7 @@ class _IncidentTile extends StatelessWidget {
       subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: _StatusPill(text: _pretty(i.status.name)),
       onTap: () {
-        // Navegación al detalle (pasamos el objeto completo)
-        Navigator.pushNamed(
-          context,
-          IncidentDetailScreen.routeName,
-          arguments: i,
-        );
+        // Futuro: detalle del incidente
       },
     );
   }
