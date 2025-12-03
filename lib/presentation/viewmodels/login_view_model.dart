@@ -18,7 +18,7 @@ class LoginViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
-    await Future<void>.delayed(const Duration(milliseconds: 700));
+    await Future<void>.delayed(const Duration(milliseconds: 2000));
 
     isLoading = false;
     notifyListeners();
