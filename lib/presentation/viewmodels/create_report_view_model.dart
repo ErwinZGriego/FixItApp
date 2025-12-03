@@ -4,20 +4,26 @@ import '../../core/di/service_locator.dart';
 import '../../domain/repositories/i_camera_service.dart';
 import '../../domain/repositories/i_local_storage_service.dart';
 
+import '../../domain/services/i_report_validator.dart';
+
 class CreateReportViewModel extends ChangeNotifier {
   CreateReportViewModel({
     ICameraService? cameraService,
     ILocalStorageService? localStorageService,
+    IReportValidator? reportValidator,
   }) : _camera = cameraService ?? getIt<ICameraService>(),
-       _storage = localStorageService ?? getIt<ILocalStorageService>();
+       _storage = localStorageService ?? getIt<ILocalStorageService>(),
+       _validator = reportValidator ?? getIt<IReportValidator>() {
+    // Notificamos cambios cuando el usuario escribe.
+    descriptionController.addListener(notifyListeners);
+  }
 
   final ICameraService _camera;
   final ILocalStorageService _storage;
+  final IReportValidator _validator;
 
-  // Texto libre del reporte
   final TextEditingController descriptionController = TextEditingController();
 
-  // Lista categorias
   final List<String> categories = const [
     'Mantenimiento',
     'Seguridad',
@@ -30,7 +36,11 @@ class CreateReportViewModel extends ChangeNotifier {
   String? imagePath; // ruta persistente
   bool isBusy = false;
 
-  // Adjuntar foto desde la cámara y guardarla de forma persistente
+  // Estado derivado: solo permitimos enviar si pasa validación.
+  bool get canSubmit => _validator
+      .validate(description: descriptionController.text, imagePath: imagePath)
+      .isValid;
+
   Future<void> attachPhoto() async {
     if (isBusy) return;
     isBusy = true;
@@ -38,12 +48,8 @@ class CreateReportViewModel extends ChangeNotifier {
 
     try {
       final tempFile = await _camera.takePicture();
-      if (tempFile == null) {
-        // Usuario canceló
-        return;
-      }
+      if (tempFile == null) return;
 
-      // Guardamos en almacenamiento persistente
       final saved = await _storage.saveImage(tempFile);
       imagePath = saved.path;
     } finally {
@@ -52,10 +58,18 @@ class CreateReportViewModel extends ChangeNotifier {
     }
   }
 
-  // Cambiar categoría
   void setCategory(String? value) {
     selectedCategory = value;
     notifyListeners();
+  }
+
+  /// helper para el botón Enviar: valida y responde si está listo.
+  Future<bool> trySubmit() async {
+    final result = _validator.validate(
+      description: descriptionController.text,
+      imagePath: imagePath,
+    );
+    return result.isValid;
   }
 
   @override

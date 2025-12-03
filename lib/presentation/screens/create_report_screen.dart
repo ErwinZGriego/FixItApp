@@ -21,7 +21,7 @@ class CreateReportScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Descripción
+            // Descripcion
             TextField(
               controller: vm.descriptionController,
               maxLines: 4,
@@ -71,16 +71,23 @@ class CreateReportScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Vista previa (si existe)
             if (vm.imagePath != null) _ImagePreview(path: vm.imagePath!),
 
             const SizedBox(height: 24),
 
+            // Enviar: deshabilitado si no pasa validacion
             ElevatedButton(
-              onPressed: null, // se habilitará en HU-09/11
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeBoxConstraints().padding,
-              ),
+              onPressed: vm.canSubmit
+                  ? () async {
+                      final ok = await vm.trySubmit();
+                      if (!context.mounted) return;
+                      if (ok) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Validación OK')),
+                        );
+                      }
+                    }
+                  : null,
               child: const Text('Enviar'),
             ),
           ],
@@ -110,11 +117,4 @@ class _ImagePreview extends StatelessWidget {
       ),
     );
   }
-}
-
-// Pequeño helper para mantener padding consistente
-class EdgeBoxConstraints {
-  const EdgeBoxConstraints();
-
-  EdgeInsets get padding => const EdgeInsets.symmetric(vertical: 14);
 }
