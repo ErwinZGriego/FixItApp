@@ -45,6 +45,7 @@ dependencies:
   mocktail: ^1.0.4
   integration_test:
     sdk: flutter
+  cloud_firestore: ^6.1.0
 
 dev_dependencies:
   flutter_test:
