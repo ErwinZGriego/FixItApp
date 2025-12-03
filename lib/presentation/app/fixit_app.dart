@@ -1,4 +1,5 @@
 // lib/presentation/app/fixit_app.dart
+import 'package:fix_it_app/presentation/screens/incident_history_screen.dart';
 import 'package:fix_it_app/presentation/viewmodels/create_report_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +33,7 @@ class FixItApp extends StatelessWidget {
             create: (_) => CreateReportViewModel(),
             child: const CreateReportScreen(),
           ),
+          IncidentHistoryScreen.routeName: (_) => const IncidentHistoryScreen(),
         },
       ),
     );
