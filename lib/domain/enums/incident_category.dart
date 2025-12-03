@@ -1,6 +1,6 @@
 enum IncidentCategory {
   mobiliario,
-  electrico,
+  infraestructura,
   limpieza,
   seguridad,
   otro;
@@ -10,8 +10,8 @@ enum IncidentCategory {
     switch (this) {
       case IncidentCategory.mobiliario:
         return 'Mobiliario';
-      case IncidentCategory.electrico:
-        return 'Eléctrico';
+      case IncidentCategory.infraestructura:
+        return 'Infraestructura';
       case IncidentCategory.limpieza:
         return 'Limpieza';
       case IncidentCategory.seguridad:
