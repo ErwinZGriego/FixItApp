@@ -2,7 +2,10 @@ import 'package:get_it/get_it.dart';
 
 import '../../data/datasources/camera_service_impl.dart';
 import '../../data/datasources/local_storage_service_impl.dart';
-import '../../data/repositories/incident_repository_impl.dart';
+import '../../data/repositories/firebase_auth_repository.dart';
+// import '../../data/repositories/incident_repository_impl.dart'; // <-- VIEJO (SQLite)
+import '../../data/repositories/firebase_incident_repository.dart'; // <-- NUEVO (Firebase)
+import '../../domain/repositories/i_auth_repository.dart';
 import '../../domain/repositories/i_camera_service.dart';
 import '../../domain/repositories/i_incident_repository.dart';
 import '../../domain/repositories/i_local_storage_service.dart';
@@ -21,8 +24,11 @@ Future<void> setupServiceLocator() async {
   // Dominio
   getIt.registerLazySingleton<IReportValidator>(() => ReportValidator());
 
-  // Repositorio de incidentes (SQLite)
+  // Repositorio de incidentes (CAMBIADO A FIREBASE)
   getIt.registerLazySingleton<IIncidentRepository>(
-    () => IncidentRepositoryImpl(),
+    () => FirebaseIncidentRepository(),
   );
+
+  //Auth repository
+  getIt.registerLazySingleton<IAuthRepository>(() => FirebaseAuthRepository());
 }
