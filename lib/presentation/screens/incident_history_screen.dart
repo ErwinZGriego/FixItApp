@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import '../../domain/models/incident.dart';
 import '../screens/home_screen.dart';
 import '../widgets/bottom_pill_nav.dart';
-import 'incident_detail_screen.dart'; // ← necesario para routeName
+import 'incident_detail_screen.dart';
 
 class IncidentHistoryScreen extends StatelessWidget {
   const IncidentHistoryScreen({super.key});
@@ -91,7 +91,6 @@ class _IncidentTile extends StatelessWidget {
       subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
       trailing: _StatusPill(text: _pretty(i.status.name)),
       onTap: () {
-        // Navega al detalle con el incidente como argumento
         Navigator.pushNamed(
           context,
           IncidentDetailScreen.routeName,
@@ -107,6 +106,7 @@ class _IncidentTile extends StatelessWidget {
   String _two(int n) => n.toString().padLeft(2, '0');
 }
 
+// --- WIDGET ACTUALIZADO ---
 class _Thumb extends StatelessWidget {
   const _Thumb({required this.path});
   final String path;
@@ -114,10 +114,39 @@ class _Thumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(8);
-    final f = File(path);
-    final child = f.existsSync()
-        ? Image.file(f, fit: BoxFit.cover)
-        : const Icon(Icons.image_not_supported_outlined, size: 28);
+
+    Widget imageWidget;
+
+    if (path.isEmpty) {
+      imageWidget = const Icon(Icons.image_not_supported_outlined, size: 28);
+    } else if (path.startsWith('http')) {
+      // Lógica para URL remota (Firebase Storage)
+      imageWidget = Image.network(
+        path,
+        fit: BoxFit.cover,
+        loadingBuilder: (_, child, progress) {
+          if (progress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: progress.expectedTotalBytes != null
+                  ? progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes!
+                  : null,
+              strokeWidth: 2,
+            ),
+          );
+        },
+        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 28),
+      );
+    } else {
+      // Lógica para archivo local (retrocompatibilidad o caché)
+      final f = File(path);
+      if (f.existsSync()) {
+        imageWidget = Image.file(f, fit: BoxFit.cover);
+      } else {
+        imageWidget = const Icon(Icons.broken_image, size: 28);
+      }
+    }
 
     return ClipRRect(
       borderRadius: radius,
@@ -125,7 +154,7 @@ class _Thumb extends StatelessWidget {
         width: 56,
         height: 56,
         color: Colors.black12,
-        child: child,
+        child: imageWidget,
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../../data/datasources/local_storage_service_impl.dart';
 import '../../data/repositories/firebase_auth_repository.dart';
 // import '../../data/repositories/incident_repository_impl.dart'; // <-- VIEJO (SQLite)
 import '../../data/repositories/firebase_incident_repository.dart'; // <-- NUEVO (Firebase)
+import '../../data/services/firebase_storage_service.dart';
 import '../../domain/repositories/i_auth_repository.dart';
 import '../../domain/repositories/i_camera_service.dart';
 import '../../domain/repositories/i_incident_repository.dart';
@@ -31,4 +32,8 @@ Future<void> setupServiceLocator() async {
 
   //Auth repository
   getIt.registerLazySingleton<IAuthRepository>(() => FirebaseAuthRepository());
+
+  getIt.registerLazySingleton<FirebaseStorageService>(
+    () => FirebaseStorageService(),
+  );
 }

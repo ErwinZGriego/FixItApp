@@ -10,7 +10,9 @@ class Incident {
   final IncidentStatus status;
   final DateTime createdAt;
 
-  // Constructor Constante
+  // 1. NUEVO CAMPO: Aquí guardaremos el UID de Firebase Auth (ej. "abc123XYZ")
+  final String userId;
+
   const Incident({
     required this.id,
     required this.title,
@@ -19,9 +21,11 @@ class Incident {
     required this.category,
     required this.status,
     required this.createdAt,
+    // 2. REQUERIDO EN EL CONSTRUCTOR: No puede existir un incidente sin dueño
+    required this.userId,
   });
 
-  // Método copyWith: Para crear copias modificadas (útil para actualizar estados)
+  // 3. ACTUALIZAR COPYWITH: Para poder editar incidentes manteniendo el mismo dueño
   Incident copyWith({
     String? id,
     String? title,
@@ -30,6 +34,7 @@ class Incident {
     IncidentCategory? category,
     IncidentStatus? status,
     DateTime? createdAt,
+    String? userId, // <--- Nuevo parámetro opcional
   }) {
     return Incident(
       id: id ?? this.id,
@@ -39,33 +44,31 @@ class Incident {
       category: category ?? this.category,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      userId: userId ?? this.userId, // <--- Si no cambia, mantén el actual
     );
   }
 
-  // Convertir a Map (para guardar en Firebase/JSON)
+  // 4. ACTUALIZAR TOMAP: Para que al guardar en Firebase, se guarde el campo 'userId'
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'title': title,
       'description': description,
       'photoPath': photoPath,
-      // Guardamos el nombre del Enum como texto (ej. "mobiliario") para que sea legible en la BD
       'category': category.name,
       'status': status.name,
-      // Guardamos la fecha en formato ISO8601 estándar
       'createdAt': createdAt.toIso8601String(),
+      'userId': userId, // <--- ¡Importante!
     };
   }
 
-  // Crear objeto desde Map (recuperar de Firebase/JSON)
+  // 5. ACTUALIZAR FROMMAP: Para leer el 'userId' cuando bajamos datos de Firebase
   factory Incident.fromMap(Map<String, dynamic> map) {
     return Incident(
       id: map['id'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       photoPath: map['photoPath'] ?? '',
-      // Convertimos el String "mobiliario" de vuelta al Enum IncidentCategory.mobiliario
-      // 'byName' es una función de Dart 2.15+ muy útil, pero agregamos un fallback por seguridad.
       category: IncidentCategory.values.firstWhere(
         (e) => e.name == map['category'],
         orElse: () => IncidentCategory.otro,
@@ -74,10 +77,11 @@ class Incident {
         (e) => e.name == map['status'],
         orElse: () => IncidentStatus.pendiente,
       ),
-      // Convertimos el String de fecha de vuelta a DateTime
       createdAt: map['createdAt'] != null
           ? DateTime.parse(map['createdAt'])
           : DateTime.now(),
+      // <--- Leemos el ID. Si es antiguo y no tiene, ponemos cadena vacía para no romper la app.
+      userId: map['userId'] ?? '',
     );
   }
 }

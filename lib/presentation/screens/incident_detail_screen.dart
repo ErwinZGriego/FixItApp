@@ -16,7 +16,7 @@ class IncidentDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Foto en grande
+            // Foto en grande (Actualizada)
             _BigPhoto(path: incident.photoPath),
 
             Padding(
@@ -30,7 +30,6 @@ class IncidentDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
 
-                  // Chips simples sin cálculos raros de color
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -66,16 +65,6 @@ class IncidentDetailScreen extends StatelessWidget {
                         : incident.description,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // Útil para debug
-                  SelectableText(
-                    'Foto: ${incident.photoPath}',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodySmall?.copyWith(color: Colors.black54),
-                  ),
                 ],
               ),
             ),
@@ -98,24 +87,61 @@ class IncidentDetailScreen extends StatelessWidget {
   }
 }
 
+// --- WIDGET ACTUALIZADO ---
 class _BigPhoto extends StatelessWidget {
   const _BigPhoto({required this.path});
   final String path;
 
   @override
   Widget build(BuildContext context) {
-    final f = File(path);
-    final child = f.existsSync()
-        ? Image.file(f, fit: BoxFit.cover)
-        : Container(
-            height: 220,
-            color: Colors.black12,
-            child: const Center(
-              child: Icon(Icons.image_not_supported_outlined, size: 42),
+    Widget child;
+
+    if (path.isEmpty) {
+      child = const Center(
+        child: Icon(Icons.image_not_supported_outlined, size: 42),
+      );
+    } else if (path.startsWith('http')) {
+      // URL Remota
+      child = Image.network(
+        path,
+        fit: BoxFit.cover,
+        loadingBuilder: (_, widget, progress) {
+          if (progress == null) return widget;
+          return Center(
+            child: CircularProgressIndicator(
+              value: progress.expectedTotalBytes != null
+                  ? progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes!
+                  : null,
             ),
           );
+        },
+        errorBuilder: (_, __, ___) => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.broken_image, size: 42, color: Colors.grey),
+              Text('No se pudo cargar la imagen'),
+            ],
+          ),
+        ),
+      );
+    } else {
+      // Archivo Local
+      final f = File(path);
+      if (f.existsSync()) {
+        child = Image.file(f, fit: BoxFit.cover);
+      } else {
+        child = const Center(
+          child: Icon(Icons.broken_image_outlined, size: 42),
+        );
+      }
+    }
 
-    return AspectRatio(aspectRatio: 16 / 9, child: child);
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: Container(color: Colors.black12, child: child),
+    );
   }
 }
 
@@ -127,7 +153,6 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fondo suave + texto legible sin convertir dobles a enteros
     final bg = light
         ? color.withValues(alpha: 0.12)
         : color.withValues(alpha: 0.15);

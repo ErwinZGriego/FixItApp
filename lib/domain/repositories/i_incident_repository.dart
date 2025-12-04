@@ -6,7 +6,7 @@ abstract class IIncidentRepository {
   Future<void> createIncident(Incident incident);
 
   // Obtener la lista de todos los incidentes
-  Future<List<Incident>> getIncidents();
+  Future<List<Incident>> getIncidents({String? userId});
 
   // Actualizar un incidente existente (ej. cambiar estado a 'resuelto')
   Future<void> updateIncident(Incident incident);
