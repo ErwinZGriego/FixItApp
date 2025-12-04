@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../viewmodels/login_view_model.dart';
 import 'home_screen.dart';
+import 'register_screen.dart'; // Asegúrate de tener este archivo creado
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -51,7 +52,7 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 12),
 
-                  // Logo/ícono superior (usamos un ícono si no hay asset)
+                  // Logo/ícono superior
                   Container(
                     width: 84,
                     height: 84,
@@ -105,7 +106,38 @@ class LoginScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        // email
+                        // --- Muestra el error si existe ---
+                        if (vm.errorMessage != null)
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.red.shade100),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 20,
+                                  color: Colors.red.shade700,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    vm.errorMessage!,
+                                    style: TextStyle(
+                                      color: Colors.red.shade900,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        // Email
                         TextField(
                           key: const ValueKey('login.email'),
                           controller: vm.emailController,
@@ -129,7 +161,7 @@ class LoginScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
 
-                        // password
+                        // Password
                         TextField(
                           key: const ValueKey('login.password'),
                           controller: vm.passwordController,
@@ -153,51 +185,48 @@ class LoginScreen extends StatelessWidget {
 
                         const SizedBox(height: 18),
 
-                        // Botón con animación de “press”
+                        // Botón de Entrar
                         _PressableScale(
                           child: ElevatedButton(
                             key: const ValueKey('login.submit'),
-                            onPressed: vm.isBusy
+                            onPressed: vm.isLoading
                                 ? null
                                 : () async {
-                                    // Nota: en HU-04 el login es simulado.
                                     final ok = await vm.submit();
+                                    // Si el widget ya no está montado, no hacemos nada
                                     if (!context.mounted) return;
+
                                     if (ok) {
                                       Navigator.pushReplacementNamed(
                                         context,
                                         HomeScreen.routeName,
                                       );
-                                    } else {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Ingresa email y password',
-                                          ),
-                                        ),
-                                      );
                                     }
+                                    // Si falla (ok == false), el ViewModel ya actualizó
+                                    // errorMessage y la UI lo mostrará arriba.
                                   },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
+                              backgroundColor: primary,
+                              foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            child: vm.isBusy
+                            child: vm.isLoading
                                 ? const SizedBox(
-                                    width: 18,
-                                    height: 18,
+                                    width: 20,
+                                    height: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
+                                      color: Colors.white,
                                     ),
                                   )
                                 : const Text(
                                     'Entrar',
                                     style: TextStyle(
                                       fontWeight: FontWeight.w700,
+                                      fontSize: 16,
                                     ),
                                   ),
                           ),
@@ -206,11 +235,40 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 24),
 
-                  // Texto secundario
+                  // --- Botón para ir al Registro ---
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '¿No tienes cuenta?',
+                        style: TextStyle(
+                          color: Colors.black.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            RegisterScreen.routeName,
+                          );
+                        },
+                        child: Text(
+                          'Regístrate',
+                          style: TextStyle(
+                            color: secondary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
                   Text(
-                    'Versión demo 0.9',
+                    'Versión 1.0',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.black.withValues(alpha: 0.45),
                     ),

@@ -9,6 +9,7 @@ import '../../core/theme/app_theme.dart';
 import '../screens/create_report_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
+import '../screens/register_screen.dart';
 import '../viewmodels/login_view_model.dart';
 
 class FixItApp extends StatelessWidget {
@@ -29,6 +30,7 @@ class FixItApp extends StatelessWidget {
         routes: {
           LoginScreen.routeName: (_) => const LoginScreen(),
           HomeScreen.routeName: (_) => const HomeScreen(),
+          RegisterScreen.routeName: (_) => const RegisterScreen(),
 
           CreateReportScreen.routeName: (_) => ChangeNotifierProvider(
             create: (_) => CreateReportViewModel(),
