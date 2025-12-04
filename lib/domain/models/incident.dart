@@ -9,9 +9,8 @@ class Incident {
   final IncidentCategory category;
   final IncidentStatus status;
   final DateTime createdAt;
-
-  // 1. NUEVO CAMPO: Aquí guardaremos el UID de Firebase Auth (ej. "abc123XYZ")
   final String userId;
+  final String? staffNotes; // <--- 1. NUEVO CAMPO
 
   const Incident({
     required this.id,
@@ -21,11 +20,10 @@ class Incident {
     required this.category,
     required this.status,
     required this.createdAt,
-    // 2. REQUERIDO EN EL CONSTRUCTOR: No puede existir un incidente sin dueño
     required this.userId,
+    this.staffNotes, // <--- 2. Agregar al constructor (opcional)
   });
 
-  // 3. ACTUALIZAR COPYWITH: Para poder editar incidentes manteniendo el mismo dueño
   Incident copyWith({
     String? id,
     String? title,
@@ -34,7 +32,8 @@ class Incident {
     IncidentCategory? category,
     IncidentStatus? status,
     DateTime? createdAt,
-    String? userId, // <--- Nuevo parámetro opcional
+    String? userId,
+    String? staffNotes, // <--- 3. Agregar al copyWith
   }) {
     return Incident(
       id: id ?? this.id,
@@ -44,11 +43,11 @@ class Incident {
       category: category ?? this.category,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
-      userId: userId ?? this.userId, // <--- Si no cambia, mantén el actual
+      userId: userId ?? this.userId,
+      staffNotes: staffNotes ?? this.staffNotes, // <---
     );
   }
 
-  // 4. ACTUALIZAR TOMAP: Para que al guardar en Firebase, se guarde el campo 'userId'
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -58,11 +57,11 @@ class Incident {
       'category': category.name,
       'status': status.name,
       'createdAt': createdAt.toIso8601String(),
-      'userId': userId, // <--- ¡Importante!
+      'userId': userId,
+      'staffNotes': staffNotes, // <--- 4. Guardar en mapa
     };
   }
 
-  // 5. ACTUALIZAR FROMMAP: Para leer el 'userId' cuando bajamos datos de Firebase
   factory Incident.fromMap(Map<String, dynamic> map) {
     return Incident(
       id: map['id'] ?? '',
@@ -80,8 +79,8 @@ class Incident {
       createdAt: map['createdAt'] != null
           ? DateTime.parse(map['createdAt'])
           : DateTime.now(),
-      // <--- Leemos el ID. Si es antiguo y no tiene, ponemos cadena vacía para no romper la app.
       userId: map['userId'] ?? '',
+      staffNotes: map['staffNotes'], // <--- 5. Leer del mapa
     );
   }
 }

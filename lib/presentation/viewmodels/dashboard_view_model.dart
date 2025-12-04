@@ -14,6 +14,28 @@ class DashboardViewModel extends ChangeNotifier {
   // Para mostrar feedback (Snackbars) en la UI
   String? message;
 
+  Future<void> updateStaffNotes(Incident incident, String notes) async {
+    final index = items.indexWhere((i) => i.id == incident.id);
+    if (index == -1) return;
+
+    final updatedIncident = incident.copyWith(staffNotes: notes);
+
+    // Actualizar localmente
+    items[index] = updatedIncident;
+    notifyListeners();
+
+    try {
+      // Guardar en Firebase
+      await _repo.updateIncident(updatedIncident);
+      message = 'Nota guardada';
+    } catch (e) {
+      // Revertir si falla (opcional, pero buena práctica)
+      items[index] = incident;
+      message = 'Error al guardar nota';
+      notifyListeners();
+    }
+  }
+
   // Cargar TODOS los incidentes (Admin Mode)
   Future<void> loadAll() async {
     isLoading = true;
