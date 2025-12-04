@@ -1,3 +1,5 @@
+import '../enums/incident_area.dart'; // <--- NUEVO IMPORT
+import '../enums/incident_building.dart'; // <--- NUEVO IMPORT
 import '../enums/incident_category.dart';
 import '../enums/incident_status.dart';
 
@@ -10,7 +12,11 @@ class Incident {
   final IncidentStatus status;
   final DateTime createdAt;
   final String userId;
-  final String? staffNotes; // <--- 1. NUEVO CAMPO
+  final String? staffNotes;
+
+  // NUEVOS CAMPOS REQUERIDOS
+  final IncidentBuilding building;
+  final IncidentArea area;
 
   const Incident({
     required this.id,
@@ -21,7 +27,9 @@ class Incident {
     required this.status,
     required this.createdAt,
     required this.userId,
-    this.staffNotes, // <--- 2. Agregar al constructor (opcional)
+    required this.building, // <--- REQUERIDO
+    required this.area, // <--- REQUERIDO
+    this.staffNotes,
   });
 
   Incident copyWith({
@@ -33,7 +41,9 @@ class Incident {
     IncidentStatus? status,
     DateTime? createdAt,
     String? userId,
-    String? staffNotes, // <--- 3. Agregar al copyWith
+    String? staffNotes,
+    IncidentBuilding? building, // <---
+    IncidentArea? area, // <---
   }) {
     return Incident(
       id: id ?? this.id,
@@ -44,7 +54,9 @@ class Incident {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       userId: userId ?? this.userId,
-      staffNotes: staffNotes ?? this.staffNotes, // <---
+      staffNotes: staffNotes ?? this.staffNotes,
+      building: building ?? this.building, // <---
+      area: area ?? this.area, // <---
     );
   }
 
@@ -58,7 +70,9 @@ class Incident {
       'status': status.name,
       'createdAt': createdAt.toIso8601String(),
       'userId': userId,
-      'staffNotes': staffNotes, // <--- 4. Guardar en mapa
+      'staffNotes': staffNotes,
+      'building': building.name, // <--- Guardamos como texto
+      'area': area.name, // <--- Guardamos como texto
     };
   }
 
@@ -80,7 +94,17 @@ class Incident {
           ? DateTime.parse(map['createdAt'])
           : DateTime.now(),
       userId: map['userId'] ?? '',
-      staffNotes: map['staffNotes'], // <--- 5. Leer del mapa
+      staffNotes: map['staffNotes'],
+
+      // Leemos y convertimos de texto a Enum (con valores por defecto por seguridad)
+      building: IncidentBuilding.values.firstWhere(
+        (e) => e.name == map['building'],
+        orElse: () => IncidentBuilding.otro,
+      ),
+      area: IncidentArea.values.firstWhere(
+        (e) => e.name == map['area'],
+        orElse: () => IncidentArea.otro,
+      ),
     );
   }
 }
