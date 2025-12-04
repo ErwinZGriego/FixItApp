@@ -5,7 +5,7 @@ import '../../domain/repositories/i_incident_repository.dart';
 class FirebaseIncidentRepository implements IIncidentRepository {
   // Instancia de Firestore
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
+
   // Nombre de la colección en Firebase
   static const String _collection = 'incidents';
 
@@ -22,14 +22,17 @@ class FirebaseIncidentRepository implements IIncidentRepository {
   Future<List<Incident>> getIncidents() async {
     final snapshot = await _firestore
         .collection(_collection)
-        .orderBy('createdAt', descending: true) // Ordenamos: más recientes primero
+        .orderBy(
+          'createdAt',
+          descending: true,
+        ) // Ordenamos: más recientes primero
         .get();
 
     return snapshot.docs.map((doc) {
       // Convertimos el JSON de Firebase a nuestro objeto Incident
       final data = doc.data();
       // Aseguramos que el ID venga del documento (por seguridad)
-      data['id'] = doc.id; 
+      data['id'] = doc.id;
       return Incident.fromMap(data);
     }).toList();
   }
