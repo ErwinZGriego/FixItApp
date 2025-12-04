@@ -1,3 +1,5 @@
+import '../enums/user_role.dart';
+
 abstract class IAuthRepository {
   // Iniciar sesión
   Future<void> signIn(String email, String password);
@@ -10,4 +12,7 @@ abstract class IAuthRepository {
 
   // Obtener el ID del usuario actual (útil para guardar reportes con el ID del creador)
   String? get currentUserId;
+
+  // Nuevo método para saber si es admin o alumno
+  Future<UserRole> getUserRole();
 }

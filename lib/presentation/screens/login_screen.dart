@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../domain/enums/user_role.dart';
 import '../viewmodels/login_view_model.dart';
+import 'dashboard_screen.dart'; // <--- Importante para la redirección de admin
 import 'home_screen.dart';
-import 'register_screen.dart'; // Asegúrate de tener este archivo creado
+import 'register_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -193,17 +195,24 @@ class LoginScreen extends StatelessWidget {
                                 ? null
                                 : () async {
                                     final ok = await vm.submit();
-                                    // Si el widget ya no está montado, no hacemos nada
                                     if (!context.mounted) return;
 
                                     if (ok) {
-                                      Navigator.pushReplacementNamed(
-                                        context,
-                                        HomeScreen.routeName,
-                                      );
+                                      // REDIRECCIÓN INTELIGENTE 🧠
+                                      if (vm.userRole == UserRole.admin) {
+                                        // Si es Admin -> Dashboard
+                                        Navigator.pushReplacementNamed(
+                                          context,
+                                          DashboardScreen.routeName,
+                                        );
+                                      } else {
+                                        // Si es Alumno -> Home Normal
+                                        Navigator.pushReplacementNamed(
+                                          context,
+                                          HomeScreen.routeName,
+                                        );
+                                      }
                                     }
-                                    // Si falla (ok == false), el ViewModel ya actualizó
-                                    // errorMessage y la UI lo mostrará arriba.
                                   },
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),

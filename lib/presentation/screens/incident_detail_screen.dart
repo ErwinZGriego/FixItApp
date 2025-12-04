@@ -10,13 +10,17 @@ class IncidentDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final incident = ModalRoute.of(context)!.settings.arguments as Incident;
 
+    // Verificamos si hay notas
+    final hasNotes =
+        incident.staffNotes != null && incident.staffNotes!.isNotEmpty;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Detalle del reporte')),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Foto en grande (Actualizada)
+            // Foto en grande
             _BigPhoto(path: incident.photoPath),
 
             Padding(
@@ -52,8 +56,53 @@ class IncidentDetailScreen extends StatelessWidget {
                     ],
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
 
+                  // --- SECCIÓN NUEVA: NOTAS DEL PERSONAL ---
+                  if (hasNotes) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.amber.shade50,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.amber.shade200),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 20,
+                                color: Colors.amber.shade800,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Nota del Personal:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.amber.shade900,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            incident.staffNotes!,
+                            style: TextStyle(
+                              color: Colors.amber.shade900,
+                              height: 1.4,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+
+                  // ----------------------------------------
                   Text(
                     'Descripción',
                     style: Theme.of(context).textTheme.titleMedium,
@@ -87,7 +136,6 @@ class IncidentDetailScreen extends StatelessWidget {
   }
 }
 
-// --- WIDGET ACTUALIZADO ---
 class _BigPhoto extends StatelessWidget {
   const _BigPhoto({required this.path});
   final String path;
@@ -101,7 +149,6 @@ class _BigPhoto extends StatelessWidget {
         child: Icon(Icons.image_not_supported_outlined, size: 42),
       );
     } else if (path.startsWith('http')) {
-      // URL Remota
       child = Image.network(
         path,
         fit: BoxFit.cover,
@@ -127,7 +174,6 @@ class _BigPhoto extends StatelessWidget {
         ),
       );
     } else {
-      // Archivo Local
       final f = File(path);
       if (f.existsSync()) {
         child = Image.file(f, fit: BoxFit.cover);

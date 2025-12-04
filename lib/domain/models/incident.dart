@@ -1,3 +1,5 @@
+import '../enums/incident_area.dart'; // <--- NUEVO IMPORT
+import '../enums/incident_building.dart'; // <--- NUEVO IMPORT
 import '../enums/incident_category.dart';
 import '../enums/incident_status.dart';
 
@@ -9,9 +11,12 @@ class Incident {
   final IncidentCategory category;
   final IncidentStatus status;
   final DateTime createdAt;
-
-  // 1. NUEVO CAMPO: Aquí guardaremos el UID de Firebase Auth (ej. "abc123XYZ")
   final String userId;
+  final String? staffNotes;
+
+  // NUEVOS CAMPOS REQUERIDOS
+  final IncidentBuilding building;
+  final IncidentArea area;
 
   const Incident({
     required this.id,
@@ -21,11 +26,12 @@ class Incident {
     required this.category,
     required this.status,
     required this.createdAt,
-    // 2. REQUERIDO EN EL CONSTRUCTOR: No puede existir un incidente sin dueño
     required this.userId,
+    required this.building, // <--- REQUERIDO
+    required this.area, // <--- REQUERIDO
+    this.staffNotes,
   });
 
-  // 3. ACTUALIZAR COPYWITH: Para poder editar incidentes manteniendo el mismo dueño
   Incident copyWith({
     String? id,
     String? title,
@@ -34,7 +40,10 @@ class Incident {
     IncidentCategory? category,
     IncidentStatus? status,
     DateTime? createdAt,
-    String? userId, // <--- Nuevo parámetro opcional
+    String? userId,
+    String? staffNotes,
+    IncidentBuilding? building, // <---
+    IncidentArea? area, // <---
   }) {
     return Incident(
       id: id ?? this.id,
@@ -44,11 +53,13 @@ class Incident {
       category: category ?? this.category,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
-      userId: userId ?? this.userId, // <--- Si no cambia, mantén el actual
+      userId: userId ?? this.userId,
+      staffNotes: staffNotes ?? this.staffNotes,
+      building: building ?? this.building, // <---
+      area: area ?? this.area, // <---
     );
   }
 
-  // 4. ACTUALIZAR TOMAP: Para que al guardar en Firebase, se guarde el campo 'userId'
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -58,11 +69,13 @@ class Incident {
       'category': category.name,
       'status': status.name,
       'createdAt': createdAt.toIso8601String(),
-      'userId': userId, // <--- ¡Importante!
+      'userId': userId,
+      'staffNotes': staffNotes,
+      'building': building.name, // <--- Guardamos como texto
+      'area': area.name, // <--- Guardamos como texto
     };
   }
 
-  // 5. ACTUALIZAR FROMMAP: Para leer el 'userId' cuando bajamos datos de Firebase
   factory Incident.fromMap(Map<String, dynamic> map) {
     return Incident(
       id: map['id'] ?? '',
@@ -80,8 +93,18 @@ class Incident {
       createdAt: map['createdAt'] != null
           ? DateTime.parse(map['createdAt'])
           : DateTime.now(),
-      // <--- Leemos el ID. Si es antiguo y no tiene, ponemos cadena vacía para no romper la app.
       userId: map['userId'] ?? '',
+      staffNotes: map['staffNotes'],
+
+      // Leemos y convertimos de texto a Enum (con valores por defecto por seguridad)
+      building: IncidentBuilding.values.firstWhere(
+        (e) => e.name == map['building'],
+        orElse: () => IncidentBuilding.otro,
+      ),
+      area: IncidentArea.values.firstWhere(
+        (e) => e.name == map['area'],
+        orElse: () => IncidentArea.otro,
+      ),
     );
   }
 }
