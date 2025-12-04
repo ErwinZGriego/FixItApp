@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../domain/enums/user_role.dart';
 import '../viewmodels/login_view_model.dart';
+import 'dashboard_screen.dart'; // <--- Importante para la redirección de admin
 import 'home_screen.dart';
 import 'register_screen.dart';
 
@@ -199,21 +200,10 @@ class LoginScreen extends StatelessWidget {
                                     if (ok) {
                                       // REDIRECCIÓN INTELIGENTE 🧠
                                       if (vm.userRole == UserRole.admin) {
-                                        // Si es Admin -> Dashboard (Aún no existe, pon un placeholder o Home por ahora)
-                                        // Navigator.pushReplacementNamed(context, '/dashboard');
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              'Bienvenido Admin (Dashboard pendiente)',
-                                            ),
-                                          ),
-                                        );
-                                        // Por ahora lo mandamos al Home para que no se quede atorado
+                                        // Si es Admin -> Dashboard
                                         Navigator.pushReplacementNamed(
                                           context,
-                                          HomeScreen.routeName,
+                                          DashboardScreen.routeName,
                                         );
                                       } else {
                                         // Si es Alumno -> Home Normal
